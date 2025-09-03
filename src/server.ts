@@ -40,6 +40,46 @@ app.post('/items', (req: Request, res: Response) => {
   res.status(201).json(newItem);
 });
 
+// Get a single item by ID
+app.get('/items/:id', (req: Request, res: Response) => {
+  const { id } = req.params;
+  const item = items.find((item) => item.id === id);
+
+  if (!item) {
+    return res.status(404).json({ error: 'Item not found' });
+  }
+
+  res.json(item);
+});
+
+// Update an item by ID
+app.put('/items/:id', (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name, quantity, purchased } = req.body;
+
+  // Validation: At least one field must be provided
+  if (!name && !quantity && purchased === undefined) {
+    return res.status(400).json({ error: 'At least one field (name, quantity, or purchased) must be provided' });
+  }
+
+  const itemIndex = items.findIndex((item) => item.id === id);
+
+  if (itemIndex === -1) {
+    return res.status(404).json({ error: 'Item not found' });
+  }
+
+  // Update only provided fields
+  const updatedItem: Item = {
+    ...items[itemIndex],
+    ...(name && { name }),
+    ...(quantity && { quantity }),
+    ...(purchased !== undefined && { purchased }),
+  };
+
+  items[itemIndex] = updatedItem;
+  res.json(updatedItem);
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
