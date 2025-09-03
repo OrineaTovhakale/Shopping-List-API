@@ -80,6 +80,19 @@ app.put('/items/:id', (req: Request, res: Response) => {
   res.json(updatedItem);
 });
 
+// Delete an item by ID
+app.delete('/items/:id', (req: Request, res: Response) => {
+  const { id } = req.params;
+  const itemIndex = items.findIndex((item) => item.id === id);
+
+  if (itemIndex === -1) {
+    return res.status(404).json({ error: 'Item not found' });
+  }
+
+  items.splice(itemIndex, 1);
+  res.status(204).send();
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
